@@ -15,3 +15,27 @@ variable "storage_account_name" {
   type        = string
   default     = "stdevops001"
 }
+
+variable "vnet_name" {
+  description = "Azure Virtual Network Name."
+  type        = string
+  default     = "vnet-devops-dev"
+}
+
+variable "vnet_address_space" {
+  description = "Azure Virtual Network Address Space."
+  type        = list(string)
+  default     = ["10.0.0.0/16"]
+}
+
+variable "subnet_name" {
+  description = "Azure Subnet Name."
+  type        = string
+  default     = "snet-web"
+}
+
+variable "subnet_address_prefixes" {
+  description = "Azure Subnet Address Prefix."
+  type        = list(string)
+  default     = ["10.0.1.0/24"]
+}
