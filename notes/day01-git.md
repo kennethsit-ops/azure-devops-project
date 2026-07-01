@@ -1,4 +1,4 @@
-# Github
+# Github Notes
 Creating Github reposititory. Push the folder structure.
 Use below commands:
 - git status
