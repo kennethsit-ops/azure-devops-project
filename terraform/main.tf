@@ -1,7 +1,7 @@
-resource "azurerm_resource_group" "main" {
+resource "azurerm_resource_group" "rg" {
 
-  name = "rg-devops-learning"
+  name = var.rg_name
 
-  location = "Canada Central"
+  location = var.location
 
 }
