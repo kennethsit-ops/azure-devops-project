@@ -1,4 +1,4 @@
-# Azure DevOps and Terraform
+# DevOps Engineer Project
 
 ## Tech Stack
 
