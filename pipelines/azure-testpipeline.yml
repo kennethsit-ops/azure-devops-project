@@ -30,3 +30,10 @@ steps:
     echo "Agent OS: $(Agent.OS)"
     echo "Working Directory: $(Build.SourcesDirectory)"
   displayName: "Display Built-in Variables"  
+
+- task: PublishPipelineArtifact@1
+  displayName: Publish Application
+
+  inputs:
+    targetPath: '$(Build.SourcesDirectory)/app'
+    artifact: 'webapp'
