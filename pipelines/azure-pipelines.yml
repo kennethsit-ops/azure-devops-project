@@ -16,7 +16,7 @@ steps:
 - task: AzureCLI@2
   displayName: 'Build and Push Docker Image to ACR'
   inputs:
-    azureSubscription: 'sc-azure-devops'
+    azureSubscription: 'sc-devops-dev'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
