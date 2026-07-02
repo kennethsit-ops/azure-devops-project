@@ -75,3 +75,9 @@ variable "admin_username" {
   type        = string
   default     = "azureuser"
 }
+
+variable "acr_name" {
+  description = "Azure Container Registry Name."
+  type        = string
+  default     = "acrdevops001"
+}

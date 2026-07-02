@@ -47,3 +47,8 @@ output "linux_vm_public_ip" {
   description = "The public IP address of the Linux virtual machine"
   value       = azurerm_linux_virtual_machine.web.public_ip_address
 }
+
+output "acr_login_server" {
+  description = "The login server of the Azure Container Registry"
+  value       = azurerm_container_registry.acr.login_server
+}
