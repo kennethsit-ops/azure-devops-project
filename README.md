@@ -1,8 +1,6 @@
-# Azure DevOps Learning Journey
+# Azure DevOps and Terraform
 
-This repository documents my transition from Application Support to Azure DevOps Engineer.
-
-## Learning Goals
+## Tech Stack
 
 - Git
 - Azure CLI

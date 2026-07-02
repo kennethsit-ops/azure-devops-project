@@ -27,3 +27,23 @@ output "subnet_id" {
   description = "Web subnet ID"
   value       = azurerm_subnet.web.id
 }
+
+output "public_ip_address" {
+  description = "The public IP address"
+  value       = azurerm_public_ip.web.ip_address
+}
+
+output "network_interface_id" {
+  description = "The ID of the network interface"
+  value       = azurerm_network_interface.web.id
+}
+
+output "linux_vm_id" {
+  description = "The ID of the Linux virtual machine"
+  value       = azurerm_linux_virtual_machine.web.id
+}
+
+output "linux_vm_public_ip" {
+  description = "The public IP address of the Linux virtual machine"
+  value       = azurerm_linux_virtual_machine.web.public_ip_address
+}

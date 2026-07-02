@@ -7,7 +7,7 @@ variable "rg_name" {
 variable "location" {
   description = "Azure Region."
   type        = string
-  default     = "Canada Central"
+  default     = "East US"
 }
 
 variable "storage_account_name" {
@@ -56,4 +56,22 @@ variable "nic_name" {
   description = "Network Interface Name."
   type        = string
   default     = "nic-web"
+}
+
+variable "vm_name" {
+  description = "Virtual Machine Name."
+  type        = string
+  default     = "vmweb01"
+}
+
+variable "vm_size" {
+  description = "Virtual Machine Size."
+  type        = string
+  default     = "Standard_D2s_v7"
+}
+
+variable "admin_username" {
+  description = "Admin Username for the Virtual Machine."
+  type        = string
+  default     = "azureuser"
 }

@@ -11,6 +11,7 @@ This folder contains Terraform code for provisioning Azure infrastructure for th
 - Network Security Group
 - Public IP
 - Network Interface
+- Ubuntu Linux Virtual Machine
 
 ## Commands
 
