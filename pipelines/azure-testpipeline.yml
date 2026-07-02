@@ -22,3 +22,11 @@ steps:
     echo "Docker version:"
     docker --version
   displayName: "Inspect Build Agent"
+
+- script: |
+    echo "Build ID: $(Build.BuildId)"
+    echo "Repository: $(Build.Repository.Name)"
+    echo "Branch: $(Build.SourceBranchName)"
+    echo "Agent OS: $(Agent.OS)"
+    echo "Working Directory: $(Build.SourcesDirectory)"
+  displayName: "Display Built-in Variables"  
