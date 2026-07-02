@@ -1,5 +1,5 @@
 variable "rg_name" {
-  description = "Azure Resource Group Name."
+  description = "Resource Group Name."
   type        = string
   default     = "rg-devops-dev"
 }
@@ -17,25 +17,43 @@ variable "storage_account_name" {
 }
 
 variable "vnet_name" {
-  description = "Azure Virtual Network Name."
+  description = "Virtual Network Name."
   type        = string
   default     = "vnet-devops-dev"
 }
 
 variable "vnet_address_space" {
-  description = "Azure Virtual Network Address Space."
+  description = "Virtual Network Address Space."
   type        = list(string)
   default     = ["10.0.0.0/16"]
 }
 
 variable "subnet_name" {
-  description = "Azure Subnet Name."
+  description = "Web Subnet Name."
   type        = string
   default     = "snet-web"
 }
 
 variable "subnet_address_prefixes" {
-  description = "Azure Subnet Address Prefix."
+  description = "Subnet Address Prefix."
   type        = list(string)
   default     = ["10.0.1.0/24"]
+}
+
+variable "nsg_name" {
+  description = "Network Security Group Name."
+  type        = string
+  default     = "nsg-web"
+}
+
+variable "public_ip_name" {
+  description = "Public IP Name."
+  type        = string
+  default     = "pip-web"
+}
+
+variable "nic_name" {
+  description = "Network Interface Name."
+  type        = string
+  default     = "nic-web"
 }
