@@ -1,0 +1,24 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- checkout: self
+
+- script: |
+    echo "Current directory:"
+    pwd
+
+    echo ""
+
+    echo "Repository contents:"
+    ls -la
+
+    echo ""
+
+    echo "Docker version:"
+    docker --version
+  displayName: "Inspect Build Agent"
