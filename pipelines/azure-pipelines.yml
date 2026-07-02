@@ -4,10 +4,28 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-steps:
+variables:
+  acrName: 'acrdevops001'
+  acrLoginServer: 'acrdevops001.azurecr.io'
+  imageName: 'my-devops-site'
+  imageTag: '$(Build.BuildId)'
 
+steps:
 - checkout: self
 
-- script: |
-    docker build -t my-devops-site:v1 ./app
-  displayName: Build Docker Image
+- task: AzureCLI@2
+  displayName: 'Build and Push Docker Image to ACR'
+  inputs:
+    azureSubscription: 'sc-azure-devops'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az acr login --name $(acrName)
+
+      docker build -t $(acrLoginServer)/$(imageName):$(imageTag) ./app
+
+      docker push $(acrLoginServer)/$(imageName):$(imageTag)
+
+      docker tag $(acrLoginServer)/$(imageName):$(imageTag) $(acrLoginServer)/$(imageName):latest
+
+      docker push $(acrLoginServer)/$(imageName):latest
