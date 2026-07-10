@@ -29,3 +29,4 @@ steps:
       docker tag $(acrLoginServer)/$(imageName):$(imageTag) $(acrLoginServer)/$(imageName):latest
 
       docker push $(acrLoginServer)/$(imageName):latest
+
