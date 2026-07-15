@@ -26,4 +26,11 @@ resource "azurerm_linux_virtual_machine" "web" {
     username   = var.admin_username
     public_key = file("~/.ssh/id_rsa.pub")
   }
+
+  custom_data = base64encode(
+    templatefile("${path.module}/scripts/cloud-init.yaml.tftpl", {
+      admin_username = var.admin_username
+    })
+  )
 }
+

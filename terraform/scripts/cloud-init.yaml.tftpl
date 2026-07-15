@@ -1,0 +1,16 @@
+#cloud-config
+
+package_update: true
+package_upgrade: false
+
+packages:
+  - docker.io
+  - curl
+  - jq
+  - tree
+
+runcmd:
+  - getent group docker || groupadd docker  # check docker group exists, if not create it
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker ${admin_username}
