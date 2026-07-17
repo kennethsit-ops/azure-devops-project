@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+TARGET="${1:-Local VM}"
+
 COMMANDS=(
     git
     docker
@@ -11,7 +13,6 @@ COMMANDS=(
 )
 
 print_header() {
-    local HOSTNAME=$(hostname)
     local CURRENT_USER=$(whoami)
     local CURRENT_TIME=$(date)
     local IP_ADDRESS=$(hostname -I | awk '{print $1}')
@@ -19,7 +20,7 @@ print_header() {
     printf "=====================================\n"
     printf "VM Health Check\n"
     printf "=====================================\n\n"
-    printf "Hostname      : %s\n" "$HOSTNAME"
+    printf "Target        : %s\n" "$TARGET"
     printf "Current user  : %s\n" "$CURRENT_USER"
     printf "Date          : %s\n" "$CURRENT_TIME"
     printf "Private IP    : %s\n" "$IP_ADDRESS"
