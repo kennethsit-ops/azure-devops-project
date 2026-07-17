@@ -77,7 +77,7 @@ check_commands_from_file() {
         exit 1
     fi
 
-    while read -r command
+    while IFS= read -r command || [[ -n "$command" ]]
     do
         [[ -z "$command" ]] && continue   # Skip empty lines
         [[ "$command" == \#* ]] && continue # Skip comments
