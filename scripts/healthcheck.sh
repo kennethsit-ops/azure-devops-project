@@ -27,7 +27,8 @@ log () {
     printf "%s [%s] %s\n" \
         "$(date '+%Y-%m-%d %H:%M:%S')" \
         "$LEVEL" \
-        "$MESSAGE" | tee -a "$LOGFILE"
+        "$MESSAGE" \
+        >> "$LOGFILE"
 }
 
 #######################################
