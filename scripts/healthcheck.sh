@@ -6,21 +6,22 @@ set -euo pipefail
 # Configuration
 #######################################
 TARGET="${1:-Local VM}"
-LOGFILE="healthcheck.log"
 
-COMMANDS=(
-    git
-    docker
-    az
-    terraform
-    kubectl
-)
 
+# Define the script directory and project directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+COMMAND_FILE="$PROJECT_DIR/config/commands.conf"
+LOG_FILE="$PROJECT_DIR/logs/healthcheck.log"
+mkdir -p "$(dirname "$LOG_FILE")" # Create logs directory if it doesn't exist
+
+# Define color codes for output
 RED="\033[31m"
 GREEN="\033[32m"
 YELLOW="\033[33m"
 RESET="\033[0m"
 
+#Logging function
 log () {
     local LEVEL="$1"
     local MESSAGE="$2"
@@ -64,6 +65,29 @@ check_command() {
     fi
 }
 
+
+#############################################################
+# Check whether a command exists using a config file
+#############################################################
+check_commands_from_file() {
+    if [[ ! -f "$COMMAND_FILE" ]] 
+    then
+        log ERROR "Config file not found: $COMMAND_FILE"
+        printf "${RED}Config file not found: $COMMAND_FILE${RESET}\n"
+        exit 1
+    fi
+
+    while read -r command
+    do
+        [[ -z "$command"]] && continue   # Skip empty lines
+        [[ "$command" == \#* ]] && continue # Skip comments
+        
+        check_command "$command"
+    done < "$COMMAND_FILE"
+}
+
+
+
 #######################################
 # Main
 #######################################
@@ -73,10 +97,12 @@ main() {
 
     print_header
 
-    for command in "${COMMANDS[@]}"
-    do
-        check_command "$command"
-    done
+#    for command in "${COMMANDS[@]}"
+#    do
+#        check_command "$command"
+#    done
+
+    check_commands_from_file
 
     log INFO "Health check completed"
 }
