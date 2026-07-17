@@ -7,35 +7,35 @@ print_header() {
     local CURRENT_USER=$(whoami)
     local CURRENT_TIME=$(date)
     local IP_ADDRESS=$(hostname -I | awk '{print $1}')
-    echo "====================================="
-    echo "VM Health Check"
-    echo "====================================="
-    echo
-    echo "Hostname      : $HOSTNAME"
-    echo "Current user  : $CURRENT_USER"
-    echo "Date          : $CURRENT_TIME"
-    echo "Private IP    : $IP_ADDRESS"
+    printf "\n"
+    printf "=====================================\n"
+    printf "VM Health Check\n"
+    printf "=====================================\n\n"
+    printf "Hostname      : %s\n" "$HOSTNAME"
+    printf "Current user  : %s\n" "$CURRENT_USER"
+    printf "Date          : %s\n" "$CURRENT_TIME"
+    printf "Private IP    : %s\n" "$IP_ADDRESS"
 }
 
 check_command() {
     local command=$1
-    if command -v "$command" &> /dev/null; then
-        echo "$command is installed"
+    if command -v "$command" &> /dev/null
+    then
+        printf "%-20s PASS\n" "$command"
     else
-        echo "$command is not installed"
+        printf "%-20s FAIL\n" "$command"
     fi
-    echo
 }
-
-
-
 main() {
     print_header
-    echo "-------------------------------------"
-    check_command git
-    check_command docker
-    check_command terraform
-    check_command az    
+    printf "-------------------------------------\n"
+
+    for command in git docker terraform az
+    do
+        check_command "$command"
+    done
 }
 
 main
+
+
