@@ -1,22 +1,21 @@
 #!/usr/bin/env bash
 
 set -u 
-HOSTNAME=$(hostname)
-CURRENT_USER=$(whoami)
-CURRENT_TIME=$(date)
-IP_ADDRESS=$(hostname -I | awk '{print $1}')
 
 print_header() {
-
+    local HOSTNAME=$(hostname)
+    local CURRENT_USER=$(whoami)
+    local CURRENT_TIME=$(date)
+    local IP_ADDRESS=$(hostname -I | awk '{print $1}')
     echo "====================================="
     echo "VM Health Check"
     echo "====================================="
+    echo
     echo "Hostname      : $HOSTNAME"
     echo "Current user  : $CURRENT_USER"
     echo "Date          : $CURRENT_TIME"
     echo "Private IP    : $IP_ADDRESS"
 }
-
 
 check_command() {
     local command=$1
@@ -25,6 +24,7 @@ check_command() {
     else
         echo "$command is not installed"
     fi
+    echo
 }
 
 
