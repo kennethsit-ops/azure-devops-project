@@ -55,10 +55,10 @@ check_command() {
     local command=$1
     if command -v "$command" &> /dev/null
     then
-        log INFO "$(printf "%-20s PASS$" "$command")"
+        log INFO "$(printf "%-20s PASS" "$command")"
         printf "%-20s PASS\n" "$command"
     else
-        log ERROR "$(printf "%-20s FAIL$" "$command")"
+        log ERROR "$(printf "%-20s FAIL" "$command")"
         printf "%-20s FAIL\n" "$command"
     fi
 }
