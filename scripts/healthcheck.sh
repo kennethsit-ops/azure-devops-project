@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
-set -u 
+set -euo pipefail
+
+COMMANDS=(
+    git
+    docker
+    az
+    terraform
+    kubectl
+)
 
 print_header() {
     local HOSTNAME=$(hostname)
@@ -28,9 +36,9 @@ check_command() {
 }
 main() {
     print_header
-    printf "-------------------------------------\n"
+    printf "=====================================\n"
 
-    for command in git docker terraform az
+    for command in "${COMMANDS[@]}"
     do
         check_command "$command"
     done
