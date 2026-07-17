@@ -29,7 +29,7 @@ log () {
         "$(date '+%Y-%m-%d %H:%M:%S')" \
         "$LEVEL" \
         "$MESSAGE" \
-        >> "$LOGFILE"
+        >> "$LOG_FILE"
 }
 
 #######################################
@@ -79,7 +79,7 @@ check_commands_from_file() {
 
     while read -r command
     do
-        [[ -z "$command"]] && continue   # Skip empty lines
+        [[ -z "$command" ]] && continue   # Skip empty lines
         [[ "$command" == \#* ]] && continue # Skip comments
         
         check_command "$command"
