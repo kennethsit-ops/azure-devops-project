@@ -243,10 +243,62 @@ check_azure_login_and_subscription() {
 
     if [[ "$current_subscription_id" == "$AZURE_SUBSCRIPTION_ID" ]]
     then 
-        report_result "Azure Login" PASS "Logged into correct subscription: $current_subscription_name ($current_subscription_id)"
+        report_result "Azure Subscription" PASS "Logged into correct subscription: $current_subscription_name ($current_subscription_id)"
     else
-        report_result "Azure Login" WARN "Logged into wrong subscription: $current_subscription_name ($current_subscription_id), expected: $AZURE_SUBSCRIPTION_NAME ($AZURE_SUBSCRIPTION_ID)"
+        report_result "Azure Subscription" WARN "Logged into wrong subscription: $current_subscription_name ($current_subscription_id), expected: $AZURE_SUBSCRIPTION_NAME ($AZURE_SUBSCRIPTION_ID)"
     fi
+}
+
+
+check_azure_resource_group() {
+    local exists
+    local location
+
+    exists=$(az group exists --name "$AZURE_RESOURCE_GROUP_NAME")
+
+    if [[ "exists" != "true" ]]
+    then
+        report_result "Azure Resource Group" FAIL "Resource group $AZURE_RESOURCE_GROUP_NAME does not exist"
+        return
+    fi
+
+    location=$(az group show --name "$AZURE_RESOURCE_GROUP_NAME" --query "location" -o tsv)
+    report_result " Resource Group" PASS "exists in location $location"
+
+}
+
+
+check_azure_vm()
+{
+    local provisioning_state
+    local power_state
+
+    if ! az vm show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$AZURE_VM_NAME" &> /dev/null
+    then
+        report_result "Azure VM" FAIL "VM $AZURE_VM_NAME does not exist in resource group $AZURE_RESOURCE_GROUP_NAME"
+        return
+    fi
+
+    provisioning_state=$(az vm get-instance-view --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$AZURE_VM_NAME" --query "instanceView.statuses[?starts_with(code, 'ProvisioningState/')].code | [0]" -o tsv)
+    power_state=$(az vm get-instance-view --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$AZURE_VM_NAME" --query "instanceView.statuses[?starts_with(code, 'PowerState/')].displayStatus" -o tsv)
+
+    if [[ "$provisioning_state" != "ProvisioningState/succeeded" ]]
+    then
+        report_result "Azure VM" FAIL "VM $AZURE_VM_NAME provisioning state is $provisioning_state"
+        return
+    fi
+
+    case "$power_state" in
+        "VM running")
+            report_result "Azure VM" PASS "VM $AZURE_VM_NAME is running"
+            ;;
+        "VM deallocated"|"VM stopped")
+            report_result "Azure VM" WARN "VM $AZURE_VM_NAME is not running (state: $power_state)"
+            ;;
+        *)
+            report_result "Azure VM" FAIL "VM $AZURE_VM_NAME is in an unexpected state: $power_state"
+            ;;
+    esac
 }
 
 
@@ -281,6 +333,8 @@ main() {
 
     printf "\nAzure checks\n"
     check_azure_login_and_subscription
+    check_azure_resource_group
+    check_azure_vm
 
     print_summary
 
