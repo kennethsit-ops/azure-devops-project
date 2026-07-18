@@ -177,7 +177,7 @@ check_cpu_load()
     local cpuload
     local cores
 
-    load=$(awk '{print $1}' /proc/loadavg)
+    cpuload=$(awk '{print $1}' /proc/loadavg)
     cores=$(nproc)
 
     local status
