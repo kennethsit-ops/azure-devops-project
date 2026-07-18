@@ -66,26 +66,32 @@ report_result () {
     local check_name="$1"
     local status="$2"
     local details="${3:-}"
+    local detail_text=""
+
+    if [[ -n "$details" ]]
+    then
+        detail_text=" $details"
+    fi
 
     case "$status" in
         PASS)
             ((PASS_COUNT+=1))
-            log INFO "$check_name: PASS $details"
-            printf "%-20s ${GREEN}PASS${RESET}\n" "$check_name" "$details"
+            log INFO "$check_name: PASS$detail_text"
+            printf "%-20s ${GREEN}PASS${RESET}%s\n" "$check_name" "$detail_text"
             ;;
         WARN)
             ((WARN_COUNT+=1))
-            log WARN "$check_name: WARN $details"
-            printf "%-20s ${YELLOW}WARN${RESET}\n" "$check_name" "$details"
+            log WARN "$check_name: WARN$detail_text"
+            printf "%-20s ${YELLOW}WARN${RESET}%s\n" "$check_name" "$detail_text"
             ;;
         FAIL)
             ((FAIL_COUNT+=1))
-            log ERROR "$check_name: FAIL $details"
-            printf "%-20s ${RED}FAIL${RESET}\n" "$check_name" "$details"
+            log ERROR "$check_name: FAIL$detail_text"
+            printf "%-20s ${RED}FAIL${RESET}%s\n" "$check_name" "$detail_text"
             ;;
         *)
             ((FAIL_COUNT+=1))
-            log ERROR "$check_name: Unknown status '$status' $details"
+            log ERROR "$check_name: Unknown status '$status'$detail_text"
             printf "%-20s ${RED}FAIL${RESET} (Unknown: %s)\n" "$check_name" "$details"
             ;;
     esac 
