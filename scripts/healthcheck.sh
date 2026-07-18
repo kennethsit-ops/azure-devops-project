@@ -16,6 +16,7 @@ mkdir -p "$(dirname "$LOG_FILE")" # Create logs directory if it doesn't exist
 
 PASS_COUNT=0
 FAIL_COUNT=0
+WARN_COUNT=0
 
 # Define color codes for output
 RED="\033[31m"
@@ -33,6 +34,37 @@ log () {
         "$MESSAGE" \
         >> "$LOG_FILE"
 }
+
+
+report_result () {
+    local check_name="$1"
+    local status="$2"
+    local details="${3:-}"
+
+    case "$status" in
+        PASS)
+            ((PASS_COUNT+=1))
+            log INFO "$check_name: PASS $details"
+            printf "%-20s ${GREEN}PASS${RESET}\n" "$check_name"
+            ;;
+        WARN)
+            ((WARN_COUNT+=1))
+            log WARN "$check_name: WARN $details"
+            printf "%-20s ${YELLOW}WARN${RESET}\n" "$check_name"
+            ;;
+        FAIL)
+            ((FAIL_COUNT+=1))
+            log ERROR "$check_name: FAIL $details"
+            printf "%-20s ${RED}FAIL${RESET}\n" "$check_name"
+            ;;
+        *)
+            ((FAIL_COUNT+=1))
+            log ERROR "$check_name: Unknown status '$status' $details"
+            printf "%-20s ${RED}FAIL${RESET} (Unknown: %s)\n" "$check_name" "$details"
+            ;;
+    esac 
+}
+
 
 #######################################
 # Display header
@@ -59,13 +91,9 @@ check_command() {
     local command=$1
     if command -v "$command" &> /dev/null
     then
-        ((PASS_COUNT+=1))
-        log INFO "$(printf "%-20s PASS" "$command")"
-        printf "%-20s ${GREEN}PASS${RESET}\n" "$command"
+        report_result "$command" PASS
     else
-        ((FAIL_COUNT+=1))
-        log ERROR "$(printf "%-20s FAIL" "$command")"
-        printf "%-20s ${RED}FAIL${RESET}\n" "$command"
+        report_result "$command" FAIL "command not found"
     fi
 }
 
@@ -90,13 +118,40 @@ check_commands_from_file() {
     done < "$COMMAND_FILE"
 }
 
+check_disk()
+{
+    local mount_point="${1:-/}"
+    local usage
+
+    usage=$(df -h "$mount_point" |
+        awk 'NR==2 {gsub("%", "", $5); print $5}')
+
+    if [[ -z "$usage" || ! "$usage" =~ ^[0-9]+$ ]]
+    then
+        report_result "Disk $mount_point" FAIL "unable to determine usage"
+        return
+    fi
+
+    if (( usage < 80 ))
+    then
+        report_result "Disk $mount_point" PASS "(${usage}% used)"
+    elif (( usage < 90 ))
+    then
+        report_result "Disk $mount_point" WARN "(${usage}% used)"
+    else
+        report_result "Disk $mount_point" FAIL "(${usage}% used)"
+    fi
+}
+
+
 print_summary() {
     printf "\n"
     printf "=====================================\n"
     printf "Health Check Summary\n"
     printf "=====================================\n"
-    printf "Passed         : %d\n" "$PASS_COUNT"
-    printf "Failed         : %d\n" "$FAIL_COUNT"
+    printf "\n%-10s %d\n" "Passed:" "$PASS_COUNT"
+    printf "%-10s %d\n" "Warnings:" "$WARN_COUNT"
+    printf "%-10s %d\n" "Failed:" "$FAIL_COUNT"
 }
 
 
@@ -109,13 +164,11 @@ main() {
 
     print_header
 
-#    for command in "${COMMANDS[@]}"
-#    do
-#        check_command "$command"
-#    done
-
     check_commands_from_file
 
+    printf "\nLocal system checks\n"
+    check_disk "/"
+    
     print_summary
 
     if [[ $FAIL_COUNT -eq 0 ]]
