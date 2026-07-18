@@ -263,43 +263,50 @@ check_azure_resource_group() {
     fi
 
     location=$(az group show --name "$AZURE_RESOURCE_GROUP_NAME" --query "location" -o tsv)
-    report_result " Resource Group" PASS "exists in location $location"
+    report_result "Resource Group" PASS "Resource group $AZURE_RESOURCE_GROUP_NAME exists in location $location"
 
 }
 
 
-check_azure_vm()
+check_azure_vms()
 {
-    local provisioning_state
+    local vm_data
+    local vm_name
     local power_state
+    local vm_count=0
 
-    if ! az vm show --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$AZURE_VM_NAME" &> /dev/null
+    if ! vm_data=$(az vm list --resource-group "$AZURE_RESOURCE_GROUP" --show-details --query "[].[name, powerState]" --output tsv)
     then
-        report_result "Azure VM" FAIL "VM $AZURE_VM_NAME does not exist in resource group $AZURE_RESOURCE_GROUP_NAME"
+        report_result "Azure VM" FAIL "Unable to retrieve VM information"
         return
     fi
 
-    provisioning_state=$(az vm get-instance-view --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$AZURE_VM_NAME" --query "instanceView.statuses[?starts_with(code, 'ProvisioningState/')].code | [0]" -o tsv)
-    power_state=$(az vm get-instance-view --resource-group "$AZURE_RESOURCE_GROUP_NAME" --name "$AZURE_VM_NAME" --query "instanceView.statuses[?starts_with(code, 'PowerState/')].displayStatus" -o tsv)
-
-    if [[ "$provisioning_state" != "ProvisioningState/succeeded" ]]
+    if [[ -z "$vm_data" ]]
     then
-        report_result "Azure VM" FAIL "VM $AZURE_VM_NAME provisioning state is $provisioning_state"
+        report_result "Azure VM" WARN "No VMs found in resource group $AZURE_RESOURCE_GROUP"
         return
     fi
 
-    case "$power_state" in
-        "VM running")
-            report_result "Azure VM" PASS "VM $AZURE_VM_NAME is running"
-            ;;
-        "VM deallocated"|"VM stopped")
-            report_result "Azure VM" WARN "VM $AZURE_VM_NAME is not running (state: $power_state)"
-            ;;
-        *)
-            report_result "Azure VM" FAIL "VM $AZURE_VM_NAME is in an unexpected state: $power_state"
-            ;;
-    esac
-}
+    while IFS=$'\t' read -r vm_name power_state
+    do 
+        ((vm_count += 1))
+
+        case "$power_state" in
+            "VM running")
+                report_result "Azure VM: $vm_name" PASS "($power_state)"
+                ;;
+            "VM stopped"|"VM deallocated")
+                report_result "Azure VM: $vm_name" WARN "($power_state)"
+                ;;
+            *)
+                report_result "Azure VM: $vm_name" FAIL "(${power_state:-unknown state})"
+                ;;
+        esac
+    done <<< "$vm_data"
+
+    log INFO "Checked $vm_count VMs in resource group $AZURE_RESOURCE_GROUP"
+
+}    
 
 
 print_summary() {
@@ -334,7 +341,7 @@ main() {
     printf "\nAzure checks\n"
     check_azure_login_and_subscription
     check_azure_resource_group
-    check_azure_vm
+    check_azure_vms
 
     print_summary
 
