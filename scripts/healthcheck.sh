@@ -7,13 +7,15 @@ set -euo pipefail
 #######################################
 TARGET="${1:-Local VM}"
 
-
 # Define the script directory and project directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 COMMAND_FILE="$PROJECT_DIR/config/commands.conf"
 LOG_FILE="$PROJECT_DIR/logs/healthcheck.log"
 mkdir -p "$(dirname "$LOG_FILE")" # Create logs directory if it doesn't exist
+
+PASS_COUNT=0
+FAIL_COUNT=0
 
 # Define color codes for output
 RED="\033[31m"
@@ -57,9 +59,11 @@ check_command() {
     local command=$1
     if command -v "$command" &> /dev/null
     then
+        ((PASS_COUNT++))
         log INFO "$(printf "%-20s PASS" "$command")"
         printf "%-20s ${GREEN}PASS${RESET}\n" "$command"
     else
+        ((FAIL_COUNT++))
         log ERROR "$(printf "%-20s FAIL" "$command")"
         printf "%-20s ${RED}FAIL${RESET}\n" "$command"
     fi
@@ -86,6 +90,14 @@ check_commands_from_file() {
     done < "$COMMAND_FILE"
 }
 
+print_summary() {
+    printf "\n"
+    printf "=====================================\n"
+    printf "Health Check Summary\n"
+    printf "=====================================\n"
+    printf "Passed         : %d\n" "$PASS_COUNT"
+    printf "Failed         : %d\n" "$FAIL_COUNT"
+}
 
 
 #######################################
@@ -104,7 +116,16 @@ main() {
 
     check_commands_from_file
 
-    log INFO "Health check completed"
+    print_summary
+
+    if [[ $FAIL_COUNT -eq 0 ]]
+    then
+        log INFO "Health check completed successfully"
+        exit 0
+    else
+        log ERROR "Health check completed with failures"
+        exit 1
+    fi
 }
 
 main
