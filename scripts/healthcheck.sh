@@ -256,7 +256,7 @@ check_azure_resource_group() {
 
     exists=$(az group exists --name "$AZURE_RESOURCE_GROUP_NAME")
 
-    if [[ "exists" != "true" ]]
+    if [[ "$exists" != "true" ]]
     then
         report_result "Azure Resource Group" FAIL "Resource group $AZURE_RESOURCE_GROUP_NAME does not exist"
         return
