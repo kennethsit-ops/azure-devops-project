@@ -275,7 +275,7 @@ check_azure_vms()
     local power_state
     local vm_count=0
 
-    if ! vm_data=$(az vm list --resource-group "$AZURE_RESOURCE_GROUP" --show-details --query "[].[name, powerState]" --output tsv)
+    if ! vm_data=$(az vm list --resource-group "$AZURE_RESOURCE_GROUP_NAME" --show-details --query "[].[name, powerState]" --output tsv)
     then
         report_result "Azure VM" FAIL "Unable to retrieve VM information"
         return
@@ -283,7 +283,7 @@ check_azure_vms()
 
     if [[ -z "$vm_data" ]]
     then
-        report_result "Azure VM" WARN "No VMs found in resource group $AZURE_RESOURCE_GROUP"
+        report_result "Azure VM" WARN "No VMs found in resource group $AZURE_RESOURCE_GROUP_NAME"
         return
     fi
 
@@ -304,7 +304,7 @@ check_azure_vms()
         esac
     done <<< "$vm_data"
 
-    log INFO "Checked $vm_count VMs in resource group $AZURE_RESOURCE_GROUP"
+    log INFO "Checked $vm_count VMs in resource group $AZURE_RESOURCE_GROUP_NAME"
 
 }    
 
