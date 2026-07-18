@@ -71,17 +71,17 @@ report_result () {
         PASS)
             ((PASS_COUNT+=1))
             log INFO "$check_name: PASS $details"
-            printf "%-20s ${GREEN}PASS${RESET}\n" "$check_name"
+            printf "%-20s ${GREEN}PASS${RESET}\n" "$check_name" "$details"
             ;;
         WARN)
             ((WARN_COUNT+=1))
             log WARN "$check_name: WARN $details"
-            printf "%-20s ${YELLOW}WARN${RESET}\n" "$check_name"
+            printf "%-20s ${YELLOW}WARN${RESET}\n" "$check_name" "$details"
             ;;
         FAIL)
             ((FAIL_COUNT+=1))
             log ERROR "$check_name: FAIL $details"
-            printf "%-20s ${RED}FAIL${RESET}\n" "$check_name"
+            printf "%-20s ${RED}FAIL${RESET}\n" "$check_name" "$details"
             ;;
         *)
             ((FAIL_COUNT+=1))
@@ -247,9 +247,9 @@ main() {
     printf "\nLocal system checks\n"
     check_disk "/"
 
-    check_memory ""
+    check_memory
 
-    check_cpu_load ""
+    check_cpu_load
 
     print_summary
 
