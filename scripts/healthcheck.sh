@@ -182,11 +182,11 @@ check_cpu_load()
 
     local status
 
-    status=$(awk -v load="$cpuload" -v cores="$cores" '
+    status=$(awk -v load_value="$cpuload" -v cores="$cores" '
     BEGIN {
-        if (load < cores * 0.8)
+        if (load_value < cores * 0.8)
             print "PASS"
-        else if (load < cores) 
+        else if (load_value < cores) 
             print "WARN"
         else
             print "FAIL"
