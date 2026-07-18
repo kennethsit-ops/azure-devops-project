@@ -174,7 +174,7 @@ check_memory()
 
 check_cpu_load()
 {
-    local load
+    local cpuload
     local cores
 
     load=$(awk '{print $1}' /proc/loadavg)
@@ -182,7 +182,7 @@ check_cpu_load()
 
     local status
 
-    status=$(awk -v load="$load" -v cores="$cores" '
+    status=$(awk -v load="$cpuload" -v cores="$cores" '
     BEGIN {
         if (load < cores * 0.8)
             print "PASS"
@@ -192,7 +192,7 @@ check_cpu_load()
             print "FAIL"
     }')
 
-    report_result "CPU Load" "$status" "(load ${load}, cores ${cores})"
+    report_result "CPU Load" "$status" "(cpuload ${cpuload}, cores ${cores})"
 }
 
 
@@ -224,7 +224,7 @@ main() {
     check_memory ""
 
     check_cpu_load ""
-    
+
     print_summary
 
     if [[ $FAIL_COUNT -eq 0 ]]
