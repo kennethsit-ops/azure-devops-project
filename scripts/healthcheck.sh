@@ -59,11 +59,11 @@ check_command() {
     local command=$1
     if command -v "$command" &> /dev/null
     then
-        ((PASS_COUNT++))
+        ((PASS_COUNT+=1))
         log INFO "$(printf "%-20s PASS" "$command")"
         printf "%-20s ${GREEN}PASS${RESET}\n" "$command"
     else
-        ((FAIL_COUNT++))
+        ((FAIL_COUNT+=1))
         log ERROR "$(printf "%-20s FAIL" "$command")"
         printf "%-20s ${RED}FAIL${RESET}\n" "$command"
     fi
