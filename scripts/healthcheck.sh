@@ -228,17 +228,24 @@ check_cpu_load()
 }
 
 
-check_azure_login() {
+check_azure_login_and_subscription() {
     local subscription_name
     local subscription_id
 
-    if az account show &> /dev/null
+    if ! az account show &> /dev/null
     then
-        subscription_name=$(az account show --query "name" -o tsv)
-        subscription_id=$(az account show --query "id" -o tsv)
-        report_result "Azure Login" PASS "Name: $subscription_name, ID: $subscription_id"
-    else
         report_result "Azure Login" FAIL "not logged in; run az login"
+        return
+    fi
+
+    current_subscription_name=$(az account show --query "name" -o tsv)
+    current_subscription_id=$(az account show --query "id" -o tsv)
+
+    if [[ "$current_subscription_id" == "$AZURE_SUBSCRIPTION_ID" ]]
+    then 
+        report_result "Azure Login" PASS "Logged into correct subscription: $current_subscription_name ($current_subscription_id)"
+    else
+        report_result "Azure Login" WARN "Logged into wrong subscription: $current_subscription_name ($current_subscription_id), expected: $AZURE_SUBSCRIPTION_NAME ($AZURE_SUBSCRIPTION_ID)"
     fi
 }
 
@@ -273,7 +280,7 @@ main() {
     check_cpu_load
 
     printf "\nAzure checks\n"
-    check_azure_login
+    check_azure_login_and_subscription
 
     print_summary
 
