@@ -223,6 +223,8 @@ main() {
 
     check_memory ""
 
+    check_cpu_load ""
+    
     print_summary
 
     if [[ $FAIL_COUNT -eq 0 ]]
