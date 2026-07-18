@@ -10,9 +10,34 @@ TARGET="${1:-Local VM}"
 # Define the script directory and project directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+TOOLKIT_CONF="$PROJECT_DIR/config/toolkit.conf"
 COMMAND_FILE="$PROJECT_DIR/config/commands.conf"
-LOG_FILE="$PROJECT_DIR/logs/healthcheck.log"
-mkdir -p "$(dirname "$LOG_FILE")" # Create logs directory if it doesn't exist
+
+# Load toolkit configuration
+if [[ -f "$TOOLKIT_CONF" ]]
+then
+    # shellcheck source=/dev/null
+    source "$TOOLKIT_CONF"
+else
+    printf "%s\n" "Config file not found: $TOOLKIT_CONF" >&2
+    exit 1
+fi
+
+# Default logging and threshold values
+LOG_DIR="${LOG_DIR:-logs}"
+LOG_FILE="${LOG_FILE:-healthcheck.log}"
+DISK_WARN_THRESHOLD="${DISK_WARN_THRESHOLD:-80}"
+DISK_FAIL_THRESHOLD="${DISK_FAIL_THRESHOLD:-90}"
+MEMORY_WARN_THRESHOLD="${MEMORY_WARN_THRESHOLD:-80}"
+MEMORY_FAIL_THRESHOLD="${MEMORY_FAIL_THRESHOLD:-90}"
+
+if [[ "$LOG_FILE" = /* ]]
+then
+    LOG_PATH="$LOG_FILE"
+else
+    LOG_PATH="$PROJECT_DIR/${LOG_DIR%/}/$LOG_FILE"
+fi
+mkdir -p "$(dirname "$LOG_PATH")" # Create logs directory if it doesn't exist
 
 PASS_COUNT=0
 FAIL_COUNT=0
@@ -24,6 +49,7 @@ GREEN="\033[32m"
 YELLOW="\033[33m"
 RESET="\033[0m"
 
+
 #Logging function
 log () {
     local LEVEL="$1"
@@ -32,7 +58,7 @@ log () {
         "$(date '+%Y-%m-%d %H:%M:%S')" \
         "$LEVEL" \
         "$MESSAGE" \
-        >> "$LOG_FILE"
+        >> "$LOG_PATH"
 }
 
 
@@ -132,10 +158,10 @@ check_disk()
         return
     fi
 
-    if (( usage < 80 ))
+    if (( usage < DISK_WARN_THRESHOLD ))
     then
         report_result "Disk $mount_point" PASS "(${usage}% used)"
-    elif (( usage < 90 ))
+    elif (( usage < DISK_FAIL_THRESHOLD ))
     then
         report_result "Disk $mount_point" WARN "(${usage}% used)"
     else
@@ -160,10 +186,10 @@ check_memory()
         return
     fi
 
-    if (( usage < 80 ))
+    if (( usage < MEMORY_WARN_THRESHOLD ))
     then
         report_result "Memory" PASS "(${usage}% used)"
-    elif (( usage < 90 ))
+    elif (( usage < MEMORY_FAIL_THRESHOLD ))
     then
         report_result "Memory" WARN "(${usage}% used)"
     else
