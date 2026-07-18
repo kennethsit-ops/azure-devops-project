@@ -172,6 +172,30 @@ check_memory()
 }
 
 
+check_cpu_load()
+{
+    local load
+    local cores
+
+    load=$(awk '{print $1}' /proc/loadavg)
+    cores=$(nproc)
+
+    local status
+
+    status=$(awk -v load="$load" -v cores="$cores" '
+    BEGIN {
+        if (load < cores * 0.8)
+            print "PASS"
+        else if (load < cores) 
+            print "WARN"
+        else
+            print "FAIL"
+    }')
+
+    report_result "CPU Load" "$status" "(load ${load}, cores ${cores})"
+}
+
+
 print_summary() {
     printf "\n"
     printf "=====================================\n"
@@ -196,7 +220,7 @@ main() {
 
     printf "\nLocal system checks\n"
     check_disk "/"
-    
+
     check_memory ""
 
     print_summary
