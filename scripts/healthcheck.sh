@@ -144,6 +144,34 @@ check_disk()
 }
 
 
+check_memory()
+{
+    local usage
+
+    usage=$(free | awk '
+        /^Mem:/ {   # Get the line starting with "Mem:"
+            usage = (($2 - $7) / $2) * 100
+            printf "%.0f\n", usage
+        }')
+
+    if [[ -z "$usage" || ! "$usage" =~ ^[0-9]+$ ]]
+    then
+        report_result "Memory" FAIL "unable to determine usage"
+        return
+    fi
+
+    if (( usage < 80 ))
+    then
+        report_result "Memory" PASS "(${usage}% used)"
+    elif (( usage < 90 ))
+    then
+        report_result "Memory" WARN "(${usage}% used)"
+    else
+        report_result "Memory" FAIL "(${usage}% used)"
+    fi
+}
+
+
 print_summary() {
     printf "\n"
     printf "=====================================\n"
@@ -169,6 +197,8 @@ main() {
     printf "\nLocal system checks\n"
     check_disk "/"
     
+    check_memory ""
+
     print_summary
 
     if [[ $FAIL_COUNT -eq 0 ]]
