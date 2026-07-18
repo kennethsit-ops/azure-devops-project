@@ -8,9 +8,14 @@ packages:
   - curl
   - jq
   - tree
+  - unzip
+  - git
+  - dnsutils
+  - net-tools
 
 runcmd:
   - getent group docker || groupadd docker  # check docker group exists, if not create it
   - systemctl enable docker
   - systemctl start docker
   - usermod -aG docker ${admin_username}
+  - [ sh, -c, "curl -sL https://aka.ms/InstallAzureCLIDeb | bash" ] # install Azure CLI

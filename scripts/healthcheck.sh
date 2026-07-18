@@ -228,6 +228,21 @@ check_cpu_load()
 }
 
 
+check_azure_login() {
+    local subscription_name
+    local subscription_id
+
+    if az account show &> /dev/null
+    then
+        subscription_name=$(az account show --query "name" -o tsv)
+        subscription_id=$(az account show --query "id" -o tsv)
+        report_result "Azure Login" PASS "Name: $subscription_name, ID: $subscription_id"
+    else
+        report_result "Azure Login" FAIL "not logged in; run az login"
+    fi
+}
+
+
 print_summary() {
     printf "\n"
     printf "=====================================\n"
@@ -256,6 +271,9 @@ main() {
     check_memory
 
     check_cpu_load
+
+    printf "\nAzure checks\n"
+    check_azure_login
 
     print_summary
 
