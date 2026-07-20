@@ -28,43 +28,43 @@ variable "vnet_address_space" {
   default     = ["10.0.0.0/16"]
 }
 
-variable "subnet_name" {
+variable "subnet_name_web" {
   description = "Web Subnet Name."
   type        = string
   default     = "snet-web"
 }
 
-variable "subnet_address_prefixes" {
+variable "subnet_address_prefixes_web" {
   description = "Subnet Address Prefix."
   type        = list(string)
   default     = ["10.0.1.0/24"]
 }
 
-variable "nsg_name" {
+variable "nsg_name_web" {
   description = "Network Security Group Name."
   type        = string
   default     = "nsg-web"
 }
 
-variable "public_ip_name" {
+variable "public_ip_name_web" {
   description = "Public IP Name."
   type        = string
   default     = "pip-web"
 }
 
-variable "nic_name" {
+variable "nic_name_web" {
   description = "Network Interface Name."
   type        = string
   default     = "nic-web"
 }
 
-variable "vm_name" {
+variable "vm_name_web" {
   description = "Virtual Machine Name."
   type        = string
   default     = "vmweb01"
 }
 
-variable "vm_size" {
+variable "vm_size_web" {
   description = "Virtual Machine Size."
   type        = string
   default     = "Standard_D2s_v7"

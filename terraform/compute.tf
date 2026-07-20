@@ -1,31 +1,17 @@
-resource "azurerm_linux_virtual_machine" "web" {
-  name          = var.vm_name
-  computer_name = var.vm_name
+module "web_vm" {
 
-  resource_group_name = azurerm_resource_group.rg.name
+  source = "./modules/linux-vm"
+
+  public_ip_name      = var.public_ip_name_web
+  nic_name            = var.nic_name_web
+  vm_name             = var.vm_name_web
   location            = azurerm_resource_group.rg.location
-  size                = var.vm_size
+  resource_group_name = azurerm_resource_group.rg.name
+  subnet_id           = azurerm_subnet.web.id
+  vm_size             = var.vm_size_web
   admin_username      = var.admin_username
-  network_interface_ids = [
-    azurerm_network_interface.web.id,
-  ]
 
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts-gen2"
-    version   = "latest"
-  }
-
-  admin_ssh_key {
-    username   = var.admin_username
-    public_key = file("~/.ssh/id_rsa.pub")
-  }
+  ssh_public_key = file(pathexpand("~/.ssh/id_rsa.pub"))
 
   custom_data = base64encode(
     templatefile("${path.module}/scripts/cloud-init.yaml.tftpl", {
@@ -33,4 +19,3 @@ resource "azurerm_linux_virtual_machine" "web" {
     })
   )
 }
-
