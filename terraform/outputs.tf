@@ -33,12 +33,33 @@ output "acr_login_server" {
   value       = azurerm_container_registry.acr.login_server
 }
 
-output "web_vm_id" {
-  description = "The ID of the Web VM"
-  value       = module.web_vm.vm_id
+output "linux_vm_ids" {
+  description = "IDs of all Linux Web virtual machines"
+
+  value = {
+    for name, vm in module.linux_vms :
+    name => vm.vm_id
+  }
 }
 
-output "web_vm_public_ip" {
-  description = "The public IP address of the Web VM"
-  value       = module.web_vm.vm_public_ip
+output "linux_vm_public_ips" {
+  description = "Public IP addresses of all Linux Web virtual machines"
+
+  value = {
+    for name, vm in module.linux_vms :
+    name => vm.vm_public_ip
+  }
+}
+
+output "linux_vms" {
+  description = "Details of all Linux virtual machines (name, id, pip)"
+
+  value = {
+    for key, vm in module.linux_vms :
+    key => {
+      vm_name   = vm.vm_name
+      vm_id     = vm.vm_id
+      public_ip = vm.vm_public_ip
+    }
+  }
 }

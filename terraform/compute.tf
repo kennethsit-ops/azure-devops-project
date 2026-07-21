@@ -1,21 +1,27 @@
-module "web_vm" {
+module "linux_vms" {
+  source   = "./modules/linux-vm"
+  for_each = local.linux_vms
+  
+  vm_name        = each.value.vm_name
+  nic_name       = each.value.nic_name
+  public_ip_name = each.value.public_ip_name
+  vm_size        = each.value.vm_size
 
-  source = "./modules/linux-vm"
-
-  public_ip_name      = var.public_ip_name_web
-  nic_name            = var.nic_name_web
-  vm_name             = var.vm_name_web
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   subnet_id           = azurerm_subnet.web.id
-  vm_size             = var.vm_size_web
-  admin_username      = var.admin_username
 
-  ssh_public_key = file(pathexpand("~/.ssh/id_rsa.pub"))
+  admin_username = var.admin_username
+
+  ssh_public_key = file(
+    pathexpand("~/.ssh/id_rsa.pub")
+  )
 
   custom_data = base64encode(
     templatefile("${path.module}/scripts/cloud-init.yaml.tftpl", {
       admin_username = var.admin_username
     })
   )
+
+  tags               = local.common_tags
 }

@@ -1,13 +1,16 @@
-variable "rg_name" {
+variable "environment" {
+  description = "Environment."
+  type        = string
+}
+
+variable "resource_group_name" {
   description = "Resource Group Name."
   type        = string
-  default     = "rg-devops-dev"
 }
 
 variable "location" {
   description = "Azure Region."
   type        = string
-  default     = "East US"
 }
 
 variable "storage_account_name" {
@@ -19,13 +22,12 @@ variable "storage_account_name" {
 variable "vnet_name" {
   description = "Virtual Network Name."
   type        = string
-  default     = "vnet-devops-dev"
+  default     = "vnet-devops"
 }
 
 variable "vnet_address_space" {
   description = "Virtual Network Address Space."
   type        = list(string)
-  default     = ["10.0.0.0/16"]
 }
 
 variable "subnet_name_web" {
@@ -34,10 +36,9 @@ variable "subnet_name_web" {
   default     = "snet-web"
 }
 
-variable "subnet_address_prefixes_web" {
+variable "subnet_address_prefix" {
   description = "Subnet Address Prefix."
   type        = list(string)
-  default     = ["10.0.1.0/24"]
 }
 
 variable "nsg_name_web" {
@@ -45,7 +46,7 @@ variable "nsg_name_web" {
   type        = string
   default     = "nsg-web"
 }
-
+/* 
 variable "public_ip_name_web" {
   description = "Public IP Name."
   type        = string
@@ -68,16 +69,26 @@ variable "vm_size_web" {
   description = "Virtual Machine Size."
   type        = string
   default     = "Standard_D2s_v7"
-}
+} */
 
 variable "admin_username" {
   description = "Admin Username for the Virtual Machine."
   type        = string
-  default     = "azureuser"
 }
 
 variable "acr_name" {
   description = "Azure Container Registry Name."
   type        = string
   default     = "acrdevops001"
+}
+
+variable "linux_vms" {
+  description = "Linux virtual machines to create"
+
+  type = map(object({
+    #vm_name        = string
+    #nic_name       = string
+    #public_ip_name = string
+    vm_size        = string
+  }))
 }

@@ -4,6 +4,7 @@ resource "azurerm_public_ip" "this" {
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
+  tags                = var.tags
 }
 
 resource "azurerm_network_interface" "this" {
@@ -48,9 +49,7 @@ resource "azurerm_linux_virtual_machine" "this" {
     version   = "latest"
   }
 
-
-
   custom_data = var.custom_data
-
+  tags        = var.tags
 }
 
