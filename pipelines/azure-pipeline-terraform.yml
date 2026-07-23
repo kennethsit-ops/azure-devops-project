@@ -13,7 +13,7 @@ parameters:
       - prod
 
 variables:
-  terraformWorkingDirectory: 'terraform'
+  terraformWorkingDirectory: '../terraform'
   azureServiceConnection: 'sc-azure-terraform-dev'
 
 pool:
