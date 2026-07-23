@@ -103,6 +103,15 @@ stages:
               TF_VAR_ssh_public_key: $(VAR_SSH_PUBLIC_KEY)
 
 
+          - bash: |
+              echo "Terraform directory:"
+              ls -la "$(terraformWorkingDirectory)"
+
+              echo "Expected plan file:"
+              ls -l "$(terraformWorkingDirectory)/$(terraformPlanFile)"
+            displayName: Verify Terraform Plan File
+
+
           - task: PublishPipelineArtifact@1
             displayName: Publish Terraform Plan
 
