@@ -19,27 +19,32 @@ variable "storage_account_name" {
   default     = "stdevops001"
 }
 
-variable "vnet_name" {
+variable "network_resource_group_name" {
+  description = "Resource group containing the existing virtual network"
+  type        = string
+}
+
+variable "existing_vnet_name" {
+  description = "Name of the existing virtual network"
+  type        = string
+}
+
+variable "existing_subnet_name" {
+  description = "Name of the existing subnet"
+  type        = string
+}
+
+/* variable "vnet_name" {
   description = "Virtual Network Name."
   type        = string
   default     = "vnet-devops"
-}
-
-variable "vnet_address_space" {
-  description = "Virtual Network Address Space."
-  type        = list(string)
 }
 
 variable "subnet_name_web" {
   description = "Web Subnet Name."
   type        = string
   default     = "snet-web"
-}
-
-variable "subnet_address_prefix" {
-  description = "Subnet Address Prefix."
-  type        = list(string)
-}
+} */
 
 variable "nsg_name_web" {
   description = "Network Security Group Name."
@@ -83,12 +88,13 @@ variable "acr_name" {
 }
 
 variable "linux_vms" {
-  description = "Linux virtual machines to create"
+  description = "Configuration for Linux virtual machines"
 
   type = map(object({
     #vm_name        = string
     #nic_name       = string
     #public_ip_name = string
-    vm_size        = string
+    vm_size          = string
+    enable_public_ip = optional(bool, false)
   }))
 }

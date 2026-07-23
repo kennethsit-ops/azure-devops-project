@@ -1,0 +1,88 @@
+trigger: none
+
+pr: none
+
+parameters:
+  - name: environment
+    displayName: Terraform environment
+    type: string
+    default: dev
+    values:
+      - dev
+      - test
+      - prod
+
+variables:
+  terraformWorkingDirectory: 'terraform'
+  azureServiceConnection: 'sc-azure-terraform-dev'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  - stage: TerraformPlan
+    displayName: Terraform Plan
+
+    jobs:
+      - job: Plan
+        displayName: Validate and Plan
+
+        steps:
+          - checkout: self
+            displayName: Checkout repository
+
+          - bash: |
+              set -euo pipefail
+
+              sudo apt-get update
+              sudo apt-get install -y \
+                gnupg \
+                software-properties-common \
+                curl
+
+              curl -fsSL https://apt.releases.hashicorp.com/gpg |
+                gpg --dearmor |
+                sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+
+              echo \
+                "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" |
+                sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+              sudo apt-get update
+              sudo apt-get install -y terraform
+
+              terraform version
+            displayName: Install Terraform
+
+          - bash: |
+              terraform fmt -check -recursive
+            displayName: Terraform format check
+            workingDirectory: $(terraformWorkingDirectory)
+
+          - task: AzureCLI@2
+            displayName: Terraform init, validate and plan
+
+            inputs:
+              azureSubscription: $(azureServiceConnection)
+              scriptType: bash
+              scriptLocation: inlineScript
+              workingDirectory: $(terraformWorkingDirectory)
+
+              inlineScript: |
+                set -euo pipefail
+
+                echo "Azure identity used by the pipeline:"
+                az account show \
+                  --query "{subscription:name, subscriptionId:id, tenantId:tenantId}" \
+                  --output table
+
+                terraform init \
+                  -reconfigure \
+                  -backend-config="backend-${{ parameters.environment }}.hcl" \
+                  -backend-config="use_azuread_auth=true"
+
+                terraform validate
+
+                terraform plan \
+                  -var-file="${{ parameters.environment }}.tfvars" \
+                  -out="${{ parameters.environment }}.tfplan"

@@ -14,6 +14,17 @@ variable "nic_name" {
   type        = string
 }
 
+variable "enable_public_ip" {
+  description = "Whether to create and attach a public IP to the VM"
+  type        = bool
+  default     = false
+}
+
+variable "network_security_group_id" {
+  description = "ID of the NSG associated with the VM network interface"
+  type        = string
+}
+
 variable "location" {
   description = "Azure Region for the VM."
   type        = string
@@ -37,7 +48,7 @@ variable "vm_name" {
 variable "vm_size" {
   description = "Virtual Machine Size."
   type        = string
-default     = "Standard_D2s_v7"
+  default     = "Standard_D2s_v7"
 }
 
 variable "admin_username" {

@@ -4,8 +4,13 @@ output "vm_id" {
 }
 
 output "vm_public_ip" {
-  description = "The public IP address of the Linux virtual machine"
-  value       = azurerm_linux_virtual_machine.this.public_ip_address
+  description = "Public IP address of the VM, if enabled"
+
+  value = (
+    var.enable_public_ip
+    ? azurerm_public_ip.this[0].ip_address
+    : null
+  )
 }
 
 output "vm_name" {

@@ -33,7 +33,7 @@ resource "azurerm_network_security_rule" "allow_http" {
   network_security_group_name = azurerm_network_security_group.web.name
 }
 
-resource "azurerm_subnet_network_security_group_association" "web" {
-  network_security_group_id = azurerm_network_security_group.web.id
-  subnet_id                 = azurerm_subnet.web.id
-}
+# resource "azurerm_subnet_network_security_group_association" "web" {
+#   network_security_group_id = azurerm_network_security_group.web.id
+#   subnet_id                 = data.azurerm_subnet.existing.id
+# }

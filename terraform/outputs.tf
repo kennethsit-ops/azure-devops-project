@@ -20,17 +20,35 @@ output "storage_account_name" {
 
 output "vnet_name" {
   description = "The name of the virtual network"
-  value       = azurerm_virtual_network.vnet.name
+  value       = data.azurerm_virtual_network.existing.name
 }
 
 output "subnet_id" {
   description = "Web subnet ID"
-  value       = azurerm_subnet.web.id
+  value       = data.azurerm_subnet.existing.id
 }
 
 output "acr_login_server" {
   description = "The login server of the Azure Container Registry"
   value       = azurerm_container_registry.acr.login_server
+}
+
+output "existing_vnet_id" {
+  description = "ID of the existing shared virtual network"
+  value       = data.azurerm_virtual_network.existing.id
+}
+
+output "existing_subnet_id" {
+  description = "ID of the existing shared subnet"
+  value       = data.azurerm_subnet.existing.id
+}
+
+output "existing_vnet_address_space" {
+  value = data.azurerm_virtual_network.existing.address_space
+}
+
+output "existing_subnet_address_prefixes" {
+  value = data.azurerm_subnet.existing.address_prefixes
 }
 
 output "linux_vm_ids" {
