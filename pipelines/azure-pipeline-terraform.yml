@@ -32,6 +32,16 @@ stages:
             displayName: Checkout repository
 
           - bash: |
+              echo "DefaultWorkingDirectory=$(System.DefaultWorkingDirectory)"
+              echo "Build.SourcesDirectory=$(Build.SourcesDirectory)"
+              pwd
+              ls -la
+              echo
+              echo "Repository structure:"
+              find . -maxdepth 3
+            displayName: "Show repository structure"
+
+          - bash: |
               set -euo pipefail
 
               sudo apt-get update
