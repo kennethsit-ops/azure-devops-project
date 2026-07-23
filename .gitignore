@@ -8,9 +8,13 @@
 # Crash logs
 crash.log
 
-# Variable files
+# Ignore Terraform variable files by default
 *.tfvars
-*.tfvars.json
+
+# Commit approved non-sensitive environment configuration
+!terraform/dev.tfvars
+!terraform/test.tfvars
+!terraform/prod.tfvars
 
 # Override files
 override.tf
