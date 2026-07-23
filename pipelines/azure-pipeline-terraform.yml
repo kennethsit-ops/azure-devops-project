@@ -112,7 +112,9 @@ stages:
             displayName: Verify Terraform Plan File
 
 
-          - publish: '$(terraformWorkingDirectory)/$(terraformPlanFile)'
-            artifact: 'terraform-plan-${{ parameters.environment }}'
+          - task: PublishPipelineArtifact@1
             displayName: Publish Terraform Plan
-                    
+            inputs:
+              targetPath: '$(terraformWorkingDirectory)/$(terraformPlanFile)'
+              artifact: 'terraform-plan-${{ parameters.environment }}'
+              publishLocation: pipeline
