@@ -15,9 +15,7 @@ module "linux_vms" {
 
   admin_username = var.admin_username
 
-  ssh_public_key = file(
-    pathexpand("~/.ssh/id_rsa.pub")
-  )
+  ssh_public_key = var.ssh_public_key
 
   custom_data = base64encode(
     templatefile("${path.module}/scripts/cloud-init.yaml.tftpl", {

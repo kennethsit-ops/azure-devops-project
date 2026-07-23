@@ -96,3 +96,5 @@ stages:
                 terraform plan \
                   -var-file="${{ parameters.environment }}.tfvars" \
                   -out="${{ parameters.environment }}.tfplan"
+            env:
+              TF_VAR_ssh_public_key: $(TF_VAR_ssh_public_key)

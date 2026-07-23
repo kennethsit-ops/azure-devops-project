@@ -87,6 +87,12 @@ variable "acr_name" {
   default     = "acrdevops001"
 }
 
+variable "ssh_public_key" {
+  description = "SSH public key used for Linux VM authentication"
+  type        = string
+  sensitive   = true
+}
+
 variable "linux_vms" {
   description = "Configuration for Linux virtual machines"
 
