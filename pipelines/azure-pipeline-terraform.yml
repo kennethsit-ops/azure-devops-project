@@ -42,10 +42,22 @@ stages:
               find . -maxdepth 3
             displayName: "Show repository structure"
 
-          - task: TerraformInstaller@1
+
+          - bash: |
+              set -euo pipefail
+
+              TERRAFORM_VERSION="1.15.7"
+
+              curl -fsSLo terraform.zip \
+                "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
+
+              unzip -o terraform.zip
+
+              sudo install terraform /usr/local/bin/terraform
+
+              terraform version
             displayName: Install Terraform
-            inputs:
-              terraformVersion: 'latest'
+
 
           - bash: |
               terraform fmt -check -recursive
